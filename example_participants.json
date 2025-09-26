@@ -1,0 +1,34 @@
+{
+  "participants": [
+    {
+      "name": "Alice",
+      "spouse": "Bob",
+      "previous_recipient": "Charlie"
+    },
+    {
+      "name": "Bob",
+      "spouse": "Alice",
+      "previous_recipient": "Frank"
+    },
+    {
+      "name": "Charlie",
+      "spouse": "Diana",
+      "previous_recipient": "Bob"
+    },
+    {
+      "name": "Diana",
+      "spouse": "Charlie",
+      "previous_recipient": "Eve"
+    },
+    {
+      "name": "Eve",
+      "spouse": null,
+      "previous_recipient": "Alice"
+    },
+    {
+      "name": "Frank",
+      "spouse": null,
+      "previous_recipient": "Diana"
+    }
+  ]
+}
