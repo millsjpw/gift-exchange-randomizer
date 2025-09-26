@@ -2,32 +2,32 @@
   "participants": [
     {
       "name": "Alice",
-      "spouse": "Bob",
+      "excluded": ["Bob"],
       "previous_recipient": "Charlie"
     },
     {
       "name": "Bob",
-      "spouse": "Alice",
+      "excluded": ["Alice"],
       "previous_recipient": "Frank"
     },
     {
       "name": "Charlie",
-      "spouse": "Diana",
+      "excluded": ["Diana"],
       "previous_recipient": "Bob"
     },
     {
       "name": "Diana",
-      "spouse": "Charlie",
+      "excluded": ["Charlie"],
       "previous_recipient": "Eve"
     },
     {
       "name": "Eve",
-      "spouse": null,
+      "excluded": [],
       "previous_recipient": "Alice"
     },
     {
       "name": "Frank",
-      "spouse": null,
+      "excluded": [],
       "previous_recipient": "Diana"
     }
   ]

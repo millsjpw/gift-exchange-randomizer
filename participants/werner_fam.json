@@ -1,0 +1,61 @@
+{
+    "participants": [
+        {
+            "name": "Peter",
+            "excluded": [
+                "Whitney"
+            ],
+            "previous_recipient": "Mallory"
+        },
+        {
+            "name": "Whitney",
+            "excluded": [
+                "Peter"
+            ],
+            "previous_recipient": "Garrett"
+        },
+        {
+            "name": "Allison",
+            "excluded": [],
+            "previous_recipient": "Peter"
+        },
+        {
+            "name": "Garrett",
+            "excluded": [
+                "Caroline"
+            ],
+            "previous_recipient": "Andrew"
+        },
+        {
+            "name": "Caroline",
+            "excluded": [
+                "Garrett"
+            ],
+            "previous_recipient": "John"
+        },
+        {
+            "name": "Emily",
+            "excluded": [],
+            "previous_recipient": "Caroline"
+        },
+        {
+            "name": "John",
+            "excluded": [
+                "Mallory"
+            ],
+            "previous_recipient": "Whitney"
+        },
+        {
+            "name": "Mallory",
+            "excluded": [
+                "John"
+            ],
+            "previous_recipient": "Allison"
+        },
+        {
+            "name": "Andrew",
+            "excluded": [],
+            "previous_recipient": "Emily"
+        }
+    ]
+}

@@ -2,22 +2,22 @@
   "participants": [
     {
       "name": "Alice",
-      "spouse": "Bob",
+      "excluded": ["Bob"],
       "previous_recipient": "Charlie"
     },
     {
       "name": "Bob",
-      "spouse": "Alice",
+      "excluded": ["Alice"],
       "previous_recipient": "Diana"
     },
     {
       "name": "Charlie",
-      "spouse": null,
+      "excluded": [],
       "previous_recipient": "Bob"
     },
     {
       "name": "Diana",
-      "spouse": null,
+      "excluded": [],
       "previous_recipient": "Alice"
     }
   ]

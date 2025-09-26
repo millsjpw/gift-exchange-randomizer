@@ -14,29 +14,31 @@ from typing import Dict, List, Set, Optional
 
 
 class Participant:
-    """Represents a participant in the gift exchange."""
-    
-    def __init__(self, name: str, spouse: Optional[str] = None, previous_recipient: Optional[str] = None):
+    """
+    Represents a participant in the gift exchange.
+    - excluded: list of names this participant cannot be assigned (e.g., spouse, ex, etc.)
+    - previous_recipient: name of the person this participant had last time
+    """
+
+    def __init__(self, name: str, excluded: Optional[List[str]] = None, previous_recipient: Optional[str] = None):
         self.name = name
-        self.spouse = spouse
+        self.excluded = excluded or []
         self.previous_recipient = previous_recipient
-        self.excluded_recipients: Set[str] = set()
-        
-        # Add spouse and previous recipient to exclusions
-        if spouse:
-            self.excluded_recipients.add(spouse)
+        self.excluded_recipients: Set[str] = set(self.excluded)
+
+        # Add previous recipient to exclusions
         if previous_recipient:
             self.excluded_recipients.add(previous_recipient)
-        
+
         # Cannot be assigned to themselves
         self.excluded_recipients.add(name)
-    
+
     def can_be_assigned(self, recipient: str) -> bool:
         """Check if this participant can be assigned to give a gift to the recipient."""
         return recipient not in self.excluded_recipients
-    
+
     def __repr__(self):
-        return f"Participant(name='{self.name}', spouse='{self.spouse}', previous='{self.previous_recipient}')"
+        return f"Participant(name='{self.name}', excluded={self.excluded}, previous='{self.previous_recipient}')"
 
 
 class GiftExchangeRandomizer:
@@ -113,20 +115,20 @@ class GiftExchangeRandomizer:
 
 
 def load_participants_from_file(filename: str) -> List[Participant]:
-    """Load participants from a JSON file."""
+    """Load participants from a JSON file using 'excluded' list."""
     try:
         with open(filename, 'r') as f:
             data = json.load(f)
-        
+
         participants = []
         for person_data in data.get('participants', []):
             name = person_data['name']
-            spouse = person_data.get('spouse')
+            excluded = person_data.get('excluded', [])
             previous_recipient = person_data.get('previous_recipient')
-            participants.append(Participant(name, spouse, previous_recipient))
-        
+            participants.append(Participant(name, excluded, previous_recipient))
+
         return participants
-    
+
     except FileNotFoundError:
         raise FileNotFoundError(f"Could not find file: {filename}")
     except json.JSONDecodeError as e:
@@ -143,10 +145,10 @@ def save_assignments_to_file(assignments: Dict[str, str], filename: str):
             data = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         data = {'participants': []}
-    
+
     # Update previous recipients based on current assignments
     participant_dict = {p['name']: p for p in data['participants']}
-    
+
     for giver, recipient in assignments.items():
         if giver in participant_dict:
             participant_dict[giver]['previous_recipient'] = recipient
@@ -154,13 +156,13 @@ def save_assignments_to_file(assignments: Dict[str, str], filename: str):
             # Add new participant if they don't exist
             participant_dict[giver] = {
                 'name': giver,
-                'spouse': None,
+                'excluded': [],
                 'previous_recipient': recipient
             }
-    
+
     # Convert back to list format
     data['participants'] = list(participant_dict.values())
-    
+
     with open(filename, 'w') as f:
         json.dump(data, f, indent=2)
 
@@ -168,43 +170,43 @@ def save_assignments_to_file(assignments: Dict[str, str], filename: str):
 def main():
     """Main function to run the gift exchange randomizer."""
     if len(sys.argv) != 2:
-        print("Usage: python gift_exchange.py <participants_file.json>")
-        print("\nThe JSON file should contain participant data in this format:")
+        print("Usage: python gift_exchange.py participants/<participants_file.json>")
+        print("\nThe JSON file should be placed in the 'participants/' folder and contain participant data in this format:")
         print('''{
-  "participants": [
-    {
-      "name": "Alice",
-      "spouse": "Bob",
-      "previous_recipient": "Charlie"
-    },
-    {
-      "name": "Bob", 
-      "spouse": "Alice",
-      "previous_recipient": "Diana"
-    }
-  ]
+    "participants": [
+        {
+            "name": "Alice",
+            "excluded": ["Bob"],
+            "previous_recipient": "Charlie"
+        },
+        {
+            "name": "Bob", 
+            "excluded": ["Alice"],
+            "previous_recipient": "Diana"
+        }
+    ]
 }''')
         sys.exit(1)
-    
+
     filename = sys.argv[1]
-    
+
     try:
         # Load participants
         participants = load_participants_from_file(filename)
-        
+
         if len(participants) < 2:
             print("Error: Need at least 2 participants for gift exchange.")
             sys.exit(1)
-        
+
         print(f"Loaded {len(participants)} participants:")
         for p in participants:
             exclusions = list(p.excluded_recipients - {p.name})
             print(f"  {p.name} (cannot give to: {', '.join(exclusions) if exclusions else 'none'})")
-        
+
         # Create randomizer and generate assignments
         randomizer = GiftExchangeRandomizer(participants)
         assignments = randomizer.randomize_assignments()
-        
+
         # Validate assignments
         violations = randomizer.validate_assignments(assignments)
         if violations:
@@ -212,17 +214,17 @@ def main():
             for violation in violations:
                 print(f"  - {violation}")
             sys.exit(1)
-        
+
         # Display results
         print("\n🎁 Gift Exchange Assignments:")
         print("=" * 40)
         for giver, recipient in sorted(assignments.items()):
             print(f"{giver} → {recipient}")
-        
+
         # Save assignments back to file for next year
         save_assignments_to_file(assignments, filename)
         print(f"\nAssignments saved to {filename} for next year's exclusions.")
-        
+
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
